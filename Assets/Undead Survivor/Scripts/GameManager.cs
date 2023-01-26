@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using System;
+using UnityEngine.SceneManagement;
 using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
@@ -10,12 +11,11 @@ public class GameManager : MonoBehaviour
     public static GameManager instance;
 
     public float gameTime;
-    public float maxGameTime = 20 * 60f;
+    public float maxGameTime;
     public int[] maxExp;
     public int level = 0;
     public int maxLevel; // 플레이어가 가질 수 있는 최대 레벨
     public int maxWeaponCnt; // 플레이어가 가질 수 있는 최대 무기 개수
-    public int initWeaponIdx;
 
     public Player player;
     public PoolManager pool;
@@ -39,9 +39,16 @@ public class GameManager : MonoBehaviour
 
     bool[] hasWeapon;
 
+    // 
+    public GameObject deadUI;
+    public GameObject winUI;
+    public GameObject charUI;
+
     // 오디오
     public AudioClip selectAudio;
     public AudioClip levelUpAudio;
+    public AudioClip deadAudio;
+    public AudioClip winAudio;
     AudioSource audioSource;
 
     // 시간 
@@ -54,19 +61,14 @@ public class GameManager : MonoBehaviour
         instance = this;
         maxLevel = maxExp.Length;
         maxWeaponCnt = 6;
-        initWeaponIdx = 1;
 
         audioSource = GetComponent<AudioSource>();
         audioSource.playOnAwake = false;
-    }
 
-    private void Start()
-    {
         InitPlayer();
         InitWeapon();
 
         hasWeapon = new bool[weapons.Length];
-        hasWeapon[initWeaponIdx] = true;
 
         skills = skillSet.GetComponentsInChildren<Skill>();
         skillTexts = new TextMeshProUGUI[skills.Length][];
@@ -77,7 +79,7 @@ public class GameManager : MonoBehaviour
             skillTexts[i] = skill.GetComponentsInChildren<TextMeshProUGUI>();
             skillSelectImgs[i] = skill.GetComponentsInChildren<Image>()[1];
         }
-        AddWeapon(weapons[initWeaponIdx]);
+        Pause();
     }
 
     private void InitPlayer()
@@ -97,7 +99,6 @@ public class GameManager : MonoBehaviour
         for (int i = 0; i < weapons.Length; i++)
         {
             weapons[i].Init(weaponDatas[i]);
-            weapons[i].spriter.color = new Color(1, 1, 1, 0);
         }
     }
 
@@ -110,7 +111,7 @@ public class GameManager : MonoBehaviour
         textTime.text = $"{min:D2}:{sec:D2}";
         if (gameTime > maxGameTime)
         {
-            gameTime = maxGameTime;
+            Invoke("Win", 0.5f);
         }
     }
 
@@ -185,6 +186,21 @@ public class GameManager : MonoBehaviour
         Resume();
     }
 
+    public void SelectChar(Weapon weapon)
+    {
+        // 오디오 효과
+        PlayAudio(selectAudio);
+
+        // 캐릭터의 초기 무기 설정
+        hasWeapon[weapon.weaponIdx] = true;
+        player.SetAnimCont(weapon.initCharIdx);
+        AddWeapon(weapon);
+
+        charUI.SetActive(false);
+
+        Resume();
+    }
+
     public void AddWeapon(Weapon weapon)
     {
         player.weapons.Add(weapon);
@@ -205,6 +221,32 @@ public class GameManager : MonoBehaviour
         audioSource.pitch = pitch;
         audioSource.Play();
     }
+
+    public void GoHome()
+    {
+        PlayAudio(selectAudio);
+        SceneManager.LoadScene("HomeScene");
+    }
+
+    public void GameStart()
+    {
+        PlayAudio(selectAudio);
+        SceneManager.LoadScene("GameScene");
+    }
+
+    public void GameOver()
+    {
+        Pause();
+        PlayAudio(deadAudio);
+        deadUI.SetActive(true);
+    }
+
+    public void Win()
+    {
+        Pause();
+        PlayAudio(winAudio);
+        winUI.SetActive(true);
+    }
 }
 
 [System.Serializable]
@@ -212,6 +254,7 @@ public class WeaponData
 {
     public string name; // 이름
     public int weaponIdx;
+    public int initCharIdx;
     public string explainment; // 설명
     public float coolTime; // 쿨타임
     public int projectileCnt; // 발사체 개수

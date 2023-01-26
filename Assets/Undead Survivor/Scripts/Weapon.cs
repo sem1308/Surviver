@@ -13,6 +13,7 @@ public class Weapon : MonoBehaviour
 {
     public string weaponName; // 이름
     public int weaponIdx; // 무기 인덱스
+    public int initCharIdx; // 초기 캐릭터 인덱스
     public string explainment; // 설명
 
     public float damage; // 대미지
@@ -35,6 +36,7 @@ public class Weapon : MonoBehaviour
     {
         weaponName = weaponData.name;
         weaponIdx = weaponData.weaponIdx;
+        initCharIdx = weaponData.initCharIdx;
         explainment = weaponData.explainment;
         bulletData = weaponData.bulletData;
         damage = weaponData.damage;

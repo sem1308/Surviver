@@ -17,6 +17,8 @@ public class Player : MonoBehaviour
     public int curWeaponCnt;
     public List<Weapon> weapons;
 
+    public RuntimeAnimatorController[] animControllers;
+
     Rigidbody2D rigid;
     SpriteRenderer spriter;
     Animator anim;
@@ -71,6 +73,11 @@ public class Player : MonoBehaviour
         }
     }
 
+    public void SetAnimCont(int animIdx)
+    {
+        anim.runtimeAnimatorController = animControllers[animIdx];
+    }
+
     public void AddHealth(float h)
     {
         health = Mathf.Min(health + h, maxHealth);
@@ -115,11 +122,21 @@ public class Player : MonoBehaviour
         gameObject.layer = 3;
         spriter.color = new Color(1, 1, 1, 0.4f);
         GameManager.instance.imageHP.fillAmount = health / maxHealth;
+
         if (health <= 0)
         {
-            // 게임 오버
+            anim.SetBool("Dead", true);
+            Invoke("Dead", 0.5f);
         }
-        Invoke("OffHit", 0.5f);
+        else
+        {
+            Invoke("OffHit", 0.5f);
+        }
+    }
+
+    public void Dead()
+    {
+        GameManager.instance.GameOver();
     }
 
     public void OffHit()
