@@ -11,6 +11,7 @@ public class Exp : MonoBehaviour
     public bool isMag;
 
     SpriteRenderer spriter;
+    public AudioClip clip;
 
     private void Awake()
     {
@@ -48,10 +49,16 @@ public class Exp : MonoBehaviour
                 gameObject.SetActive(false);
                 break;
             case "ExpArea":
-                isMag = true;
+                SetMag();
                 break;
             default:
                 break;
         }
+    }
+
+    public void SetMag()
+    {
+        isMag = true;
+        GameManager.instance.PlayAudio(clip, 0.1f, 2f);
     }
 }

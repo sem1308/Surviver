@@ -27,6 +27,7 @@ public class GameManager : MonoBehaviour
     public Image imageHP;
     public GameObject HPBox;
     public TextMeshProUGUI textTime;
+    public TextMeshProUGUI textLV;
     public Image imageClear;
     public Image imageDie;
 
@@ -87,6 +88,8 @@ public class GameManager : MonoBehaviour
         player.curExp = 0f;
         player.maxExp = maxExp[0];
         player.curWeaponCnt = 0;
+
+        textLV.text = player.level.ToString();
     }
 
     private void InitWeapon()
@@ -125,8 +128,7 @@ public class GameManager : MonoBehaviour
     public void ShowSkills()
     {
         // 오디오 효과
-        audioSource.clip = levelUpAudio;
-        audioSource.Play();
+        PlayAudio(levelUpAudio);
 
         skillSet.SetActive(true);
         Pause();
@@ -164,8 +166,7 @@ public class GameManager : MonoBehaviour
     public void SelectSkill(int which)
     {
         // 오디오 효과
-        audioSource.clip = selectAudio;
-        audioSource.Play();
+        PlayAudio(selectAudio);
 
         // 스킬 선택
         Skill skill = skills[which];
@@ -195,6 +196,14 @@ public class GameManager : MonoBehaviour
         Array values = Enum.GetValues(typeof(T));
 
         return (T)values.GetValue(new System.Random().Next(0, values.Length));
+    }
+
+    public void PlayAudio(AudioClip clip, float vol = 0.8f, float pitch = 1f)
+    {
+        audioSource.clip = clip;
+        audioSource.volume = vol;
+        audioSource.pitch = pitch;
+        audioSource.Play();
     }
 }
 

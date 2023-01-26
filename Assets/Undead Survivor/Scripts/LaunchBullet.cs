@@ -13,6 +13,14 @@ public class LaunchBullet : Bullet
     bool isLaunched;
     Vector3 transVec;
 
+    AudioSource audioSource;
+
+    protected override void Awake()
+    {
+        base.Awake();
+        audioSource = GetComponent<AudioSource>();
+    }
+
     protected override void FixedUpdate()
     {
         base.FixedUpdate();
@@ -22,6 +30,7 @@ public class LaunchBullet : Bullet
             {
                 isLaunched = true;
                 spriter.color = new Color(1, 1, 1, 1);
+                audioSource.Play();
                 Launch();
             }
             else

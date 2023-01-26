@@ -33,6 +33,7 @@ public class Enemy : MonoBehaviour
     Rigidbody2D rigid;
     SpriteRenderer spriter;
     Animator anim;
+    AudioSource audioSource;
 
     // Start is called before the first frame update
     void Awake()
@@ -40,6 +41,7 @@ public class Enemy : MonoBehaviour
         rigid = GetComponent<Rigidbody2D>();
         spriter = GetComponent<SpriteRenderer>();
         anim = GetComponent<Animator>();
+        audioSource = GetComponent<AudioSource>();
     }
 
     // is called once per frame
@@ -125,6 +127,7 @@ public class Enemy : MonoBehaviour
             health = maxHealth;
             DropItem(pos);
         }
+        audioSource.Play();
         Invoke("OffHit", 0.05f);
     }
 

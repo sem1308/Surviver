@@ -20,12 +20,14 @@ public class Player : MonoBehaviour
     Rigidbody2D rigid;
     SpriteRenderer spriter;
     Animator anim;
+    AudioSource audioSource;
 
     void Awake()
     {
         rigid = GetComponent<Rigidbody2D>();
         spriter = GetComponent<SpriteRenderer>();
         anim = GetComponent<Animator>();
+        audioSource = GetComponent<AudioSource>();
         weapons = new List<Weapon>();
         prevVec = new Vector2(1, 0);
     }
@@ -89,23 +91,26 @@ public class Player : MonoBehaviour
         // 게임 일시정지
         GameManager.instance.Pause();
 
-        if (++level == GameManager.instance.maxLevel)
+        // 레벨업
+        if (level++ == GameManager.instance.maxLevel)
         {
             curExp = maxExp;
+            level--;
+            GameManager.instance.Resume();
         }
         else
         {
             curExp = remain;
             maxExp = GameManager.instance.maxExp[level - 1];
+            // 스킬 고르기
+            GameManager.instance.ShowSkills();
         }
-
-        // 스킬 고르기
-        GameManager.instance.ShowSkills();
+        GameManager.instance.textLV.text = level.ToString();
     }
 
     public void OnHit(float damage)
     {
-        // Debug.Log("아픔");
+        audioSource.Play();
         health -= damage;
         gameObject.layer = 3;
         spriter.color = new Color(1, 1, 1, 0.4f);

@@ -20,7 +20,7 @@ public class Item : MonoBehaviour
                     foreach (GameObject obj in exps)
                     {
                         Exp exp = obj.GetComponent<Exp>();
-                        exp.isMag = true;
+                        exp.SetMag();
                     }
                     gameObject.SetActive(false);
                 }
