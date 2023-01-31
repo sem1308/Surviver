@@ -38,17 +38,21 @@ public class GameManager : MonoBehaviour
     Image[] skillSelectImgs;
 
     bool[] hasWeapon;
+    bool isMenuOpen;
+    bool isCharSelected;
 
-    // 
-    public GameObject deadUI;
-    public GameObject winUI;
-    public GameObject charUI;
+    // UI
+    public GameObject UIDead;
+    public GameObject UIWin;
+    public GameObject UIChar;
+    public GameObject UIEsc;
+    public GameObject UISetting;
 
     // 오디오
-    public AudioClip selectAudio;
-    public AudioClip levelUpAudio;
-    public AudioClip deadAudio;
-    public AudioClip winAudio;
+    public AudioClip AudioSelect;
+    public AudioClip AudioLevelUp;
+    public AudioClip AudioDead;
+    public AudioClip AudioWin;
     AudioSource audioSource;
 
     // 시간 
@@ -113,6 +117,11 @@ public class GameManager : MonoBehaviour
         {
             Invoke("Win", 0.5f);
         }
+
+        if (Input.GetKeyDown(KeyCode.Escape))
+        {
+            Esc();
+        }
     }
 
     /* 기타 API */
@@ -129,7 +138,7 @@ public class GameManager : MonoBehaviour
     public void ShowSkills()
     {
         // 오디오 효과
-        PlayAudio(levelUpAudio);
+        PlayAudio(AudioLevelUp);
 
         skillSet.SetActive(true);
         Pause();
@@ -167,7 +176,7 @@ public class GameManager : MonoBehaviour
     public void SelectSkill(int which)
     {
         // 오디오 효과
-        PlayAudio(selectAudio);
+        PlayAudio(AudioSelect);
 
         // 스킬 선택
         Skill skill = skills[which];
@@ -189,15 +198,15 @@ public class GameManager : MonoBehaviour
     public void SelectChar(Weapon weapon)
     {
         // 오디오 효과
-        PlayAudio(selectAudio);
+        PlayAudio(AudioSelect);
 
         // 캐릭터의 초기 무기 설정
         hasWeapon[weapon.weaponIdx] = true;
         player.SetAnimCont(weapon.initCharIdx);
         AddWeapon(weapon);
 
-        charUI.SetActive(false);
-
+        UIChar.SetActive(false);
+        isCharSelected = true;
         Resume();
     }
 
@@ -224,28 +233,51 @@ public class GameManager : MonoBehaviour
 
     public void GoHome()
     {
-        PlayAudio(selectAudio);
+        PlayAudio(AudioSelect);
         SceneManager.LoadScene("HomeScene");
     }
 
     public void GameStart()
     {
-        PlayAudio(selectAudio);
+        PlayAudio(AudioSelect);
         SceneManager.LoadScene("GameScene");
     }
 
     public void GameOver()
     {
         Pause();
-        PlayAudio(deadAudio);
-        deadUI.SetActive(true);
+        PlayAudio(AudioDead);
+        UIDead.SetActive(true);
     }
 
     public void Win()
     {
         Pause();
-        PlayAudio(winAudio);
-        winUI.SetActive(true);
+        PlayAudio(AudioWin);
+        UIWin.SetActive(true);
+    }
+
+    public void Esc()
+    {
+        PlayAudio(AudioSelect);
+        if (!isCharSelected) return;
+        if (isMenuOpen)
+        {
+            Resume();
+            isMenuOpen = false;
+        }
+        else
+        {
+            Pause();
+            isMenuOpen = true;
+        }
+        UIEsc.SetActive(isMenuOpen);
+    }
+
+    public void OCSetting(bool isOpen)
+    {
+        PlayAudio(AudioSelect);
+        UISetting.SetActive(isOpen);
     }
 }
 
